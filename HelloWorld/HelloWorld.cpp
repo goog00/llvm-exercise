@@ -27,6 +27,7 @@ struct HelloWorld : PassInfoMixin<HelloWorld> {
 
 llvm::PassPluginLibraryInfo getHelloWorldPluginInfo() {
   return {LLVM_PLUGIN_API_VERSION, "helloWorld", LLVM_VERSION_STRING,
+          //lamada 函数
           [](PassBuilder &PB) {
             PB.registerPipelineParsingCallback(
                 [](StringRef Name, FunctionPassManager &FPM,
