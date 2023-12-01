@@ -3,12 +3,15 @@
 set(LLVM_EXECISE_PLUGINS
    
     OpcodeCounter
+    InjectFuncCall
 
     )
 
 
 set(OpcodeCounter_SOURCES
   OpcodeCounter.cpp)
+set(InjectFuncCall_SOURCES
+  InjectFuncCall.cpp)  
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================
