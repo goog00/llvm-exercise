@@ -27,7 +27,7 @@ bool InjectFuncCall::runOnModule(Module &M) {
   PrintfF->addParamAttr(0, Attribute::ReadOnly);
 
   llvm::Constant *PrintfFormatStr = llvm::ConstantDataArray::getString(
-      CTX, "(llvm-exercise) Hell from :%s\n(llvm-exercise)  number of "
+      CTX, "(llvm-exercise) Hello from :%s\n(llvm-exercise)  number of "
            "arguments: %d\n");
 
   Constant *PrintfFormatStrVal =
