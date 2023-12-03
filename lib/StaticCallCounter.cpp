@@ -1,4 +1,4 @@
-// 统计编译时函数调用次数
+// 统计静态编译时函数调用次数
 #include "StaticCallCounter.h"
 
 #include "llvm/Passes/PassBuilder.h"
@@ -23,6 +23,7 @@ StaticCallCounter::Result StaticCallCounter::runOnModule(Module &M) {
           continue;
         }
         // 如果CB是直接函数调用，则DirectInvoc不能为空
+        //返回被调用的函数，如果这是间接函数调用或函数签名与调用签名不匹配，则返回 null。
         auto DirectInvoc = CB->getCalledFunction();
         if (nullptr == DirectInvoc) {
           continue;
