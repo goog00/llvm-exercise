@@ -6,6 +6,7 @@ set(LLVM_EXECISE_PLUGINS
     InjectFuncCall
     StaticCallCounter
     DynamicCallCounter
+    MBASub
 
     )
 
@@ -18,6 +19,8 @@ set(StaticCallCounter_SOURCES
   StaticCallCounter.cpp) 
 set(DynamicCallCounter_SOURCES
   DynamicCallCounter.cpp)     
+set(MBASub_SOURCES
+  MBASub.cpp) 
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================

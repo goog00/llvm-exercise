@@ -5,6 +5,7 @@
     "C_Cpp.clang_format_fallbackStyle": "LLVM",
     //允许在json中添加注释
     "files.associations": {
-        "*.json": "jsonc"
+        "*.json": "jsonc",
+        "stdio.h": "c"
     }
 }
