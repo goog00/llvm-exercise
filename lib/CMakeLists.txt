@@ -7,6 +7,8 @@ set(LLVM_EXECISE_PLUGINS
     StaticCallCounter
     DynamicCallCounter
     MBASub
+    MBAAdd
+    RIVS
 
     )
 
@@ -21,6 +23,10 @@ set(DynamicCallCounter_SOURCES
   DynamicCallCounter.cpp)     
 set(MBASub_SOURCES
   MBASub.cpp) 
+set(MBAAdd_SOURCES
+  MBAAdd.cpp)  
+set(RIVS_SOURCES
+  RIVS.cpp)   
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================
