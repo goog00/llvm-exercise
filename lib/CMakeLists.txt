@@ -10,6 +10,7 @@ set(LLVM_EXECISE_PLUGINS
     MBAAdd
     RIV
     DuplicateBB
+    MergeBB
 
     )
 
@@ -29,7 +30,9 @@ set(MBAAdd_SOURCES
 set(RIV_SOURCES
   RIV.cpp) 
 set(DuplicateBB_SOURCES
-  DuplicateBB.cpp)  
+  DuplicateBB.cpp) 
+set(MergeBB_SOURCES
+  MergeBB.cpp)   
 
 
 # CONFIGURE THE PLUGIN LIBRARIES
