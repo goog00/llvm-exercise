@@ -11,6 +11,8 @@ set(LLVM_EXECISE_PLUGINS
     RIV
     DuplicateBB
     MergeBB
+    FindFCmpEq
+    ConvertFCmpEq
 
     )
 
@@ -32,7 +34,11 @@ set(RIV_SOURCES
 set(DuplicateBB_SOURCES
   DuplicateBB.cpp) 
 set(MergeBB_SOURCES
-  MergeBB.cpp)   
+  MergeBB.cpp)  
+set(FindFCmpEq_SOURCES
+  FindFCmpEq.cpp)   
+set(ConvertFCmpEq_SOURCES
+  ConvertFCmpEq.cpp)
 
 
 # CONFIGURE THE PLUGIN LIBRARIES
