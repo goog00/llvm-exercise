@@ -2,43 +2,45 @@
 # ======================================================
 set(LLVM_EXECISE_PLUGINS
    
-    OpcodeCounter
-    InjectFuncCall
-    StaticCallCounter
-    DynamicCallCounter
-    MBASub
-    MBAAdd
-    RIV
-    DuplicateBB
-    MergeBB
-    FindFCmpEq
-    ConvertFCmpEq
-
+    # OpcodeCounter
+    # InjectFuncCall
+    # StaticCallCounter
+    # DynamicCallCounter
+    # MBASub
+    # MBAAdd
+    # RIV
+    # DuplicateBB
+    # MergeBB
+    # FindFCmpEq
+    # ConvertFCmpEq
+    MemoryTrace
     )
 
 
-set(OpcodeCounter_SOURCES
-  OpcodeCounter.cpp)
-set(InjectFuncCall_SOURCES
-  InjectFuncCall.cpp)  
-set(StaticCallCounter_SOURCES
-  StaticCallCounter.cpp) 
-set(DynamicCallCounter_SOURCES
-  DynamicCallCounter.cpp)     
-set(MBASub_SOURCES
-  MBASub.cpp) 
-set(MBAAdd_SOURCES
-  MBAAdd.cpp)  
-set(RIV_SOURCES
-  RIV.cpp) 
-set(DuplicateBB_SOURCES
-  DuplicateBB.cpp) 
-set(MergeBB_SOURCES
-  MergeBB.cpp)  
-set(FindFCmpEq_SOURCES
-  FindFCmpEq.cpp)   
-set(ConvertFCmpEq_SOURCES
-  ConvertFCmpEq.cpp)
+# set(OpcodeCounter_SOURCES
+#   OpcodeCounter.cpp)
+# set(InjectFuncCall_SOURCES
+#   InjectFuncCall.cpp)  
+# set(StaticCallCounter_SOURCES
+#   StaticCallCounter.cpp) 
+# set(DynamicCallCounter_SOURCES
+#   DynamicCallCounter.cpp)     
+# set(MBASub_SOURCES
+#   MBASub.cpp) 
+# set(MBAAdd_SOURCES
+#   MBAAdd.cpp)  
+# set(RIV_SOURCES
+#   RIV.cpp) 
+# set(DuplicateBB_SOURCES
+#   DuplicateBB.cpp) 
+# set(MergeBB_SOURCES
+#   MergeBB.cpp)  
+# set(FindFCmpEq_SOURCES
+#   FindFCmpEq.cpp)   
+# set(ConvertFCmpEq_SOURCES
+#   ConvertFCmpEq.cpp)
+set(MemoryTrace_SOURCES
+  MemoryTrace.cpp)  
 
 
 # CONFIGURE THE PLUGIN LIBRARIES
