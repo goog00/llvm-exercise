@@ -6,7 +6,7 @@
        
         "${workspaceFolder}/**", 
         // "/usr/local/llvmbuild/include/**"
-        "/usr/local/Cellar/llvm/17.0.5/include/**"
+        "/usr/local/Cellar/llvm/17.0.6/include/**"
       ],
       "defines": [],
       "macFrameworkPath": [

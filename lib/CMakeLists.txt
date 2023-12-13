@@ -14,6 +14,7 @@ set(LLVM_EXECISE_PLUGINS
     # FindFCmpEq
     # ConvertFCmpEq
     MemoryTrace
+    FunctionInfo
     )
 
 
@@ -41,6 +42,8 @@ set(LLVM_EXECISE_PLUGINS
 #   ConvertFCmpEq.cpp)
 set(MemoryTrace_SOURCES
   MemoryTrace.cpp)  
+set(FunctionInfo_SOURCES
+  FunctionInfo.cpp)  
 
 
 # CONFIGURE THE PLUGIN LIBRARIES
