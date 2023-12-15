@@ -1,12 +1,42 @@
-//=======================================================
-//FIFE:
-//     RIV.cpp
-//DESCRIPTION:
-//      对于输入函数中的每个基本块，此Pass都会创建一个可从该块访问的整数值列表。 
-//      它使用 DominatorTree 传递的结果。
-//ALGORITHM:
-//      
+//=============================================================================
+// FILE:
+//    RIV.cpp
+//
+// DESCRIPTION:
+//    For every basic block  in the input function, this pass creates a list of
+//    integer values reachable from that block. It uses the results of the
+//    DominatorTree pass.
+//
+// ALGORITHM:
+//    -------------------------------------------------------------------------
+//    v_N = set of integer values defined in basic block N (BB_N)
+//    RIV_N = set of reachable integer values for basic block N (BB_N)
+//    -------------------------------------------------------------------------
+//    STEP 1:
+//    For every BB_N in F:
+//      compute v_N and store it in DefinedValuesMap
+//    -------------------------------------------------------------------------
+//    STEP 2:
+//    计算入口块 (BB_0) 的 RIV：     
+//    Compute the RIVs for the entry block (BB_0):
+//      RIV_0 = {input args, global vars}
+//    -------------------------------------------------------------------------
+//            遍历 CFG，对于 BB_N 占主导地位的每个 BB_M，
+//    STEP 3: Traverse the CFG and for every BB_M that BB_N dominates,
+//    calculate RIV_M as follows:
+//      RIV_M = {RIV_N, v_N}
+//    -------------------------------------------------------------------------
+//
+// REFERENCES:
+//    Based on examples from:
+//    "Building, Testing and Debugging a Simple out-of-tree LLVM Pass", Serge
+//    Guelton and Adrien Guinet, LLVM Dev Meeting 2015
+//
+// License: MIT
+//=============================================================================
 
+
+//可达整数值：这些值是可以通过在基本块内的操作计算得到的整数值。例如，如果基本块中有 int x = 5; 和 int y = x + 3;，那么可达整数值为 5 和 8。
 
 
 #include "RIV.h"
@@ -46,7 +76,7 @@ RIV::Result RIV::buildRIV(Function &F,NodeTy CFGRoot) {
 
     }
     
-  //step2: 为BB计算 RIVS,包括全局变量和输入参数
+  //step2: 计算入口bb,  包括全局变量和输入参数
    auto &EntryBBValues = ResultMap[&F.getEntryBlock()];
 
    for(auto &Global : F.getParent()->globals()) {

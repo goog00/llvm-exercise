@@ -1,4 +1,4 @@
-//https://www.bitsand.cloud/posts/llvm-pass/
+// https://www.bitsand.cloud/posts/llvm-pass/
 
 #include "llvm/IR/LegacyPassManager.h"
 #include "llvm/Passes/PassBuilder.h"
@@ -74,24 +74,26 @@ void addMemoryTraceFPInitialization(llvm::Module &M, llvm::Function &MainFunc) {
   GlobalVariable *FPGobal = M.getNamedGlobal(FilePointerVarName);
 }
 
+// 定义函数，用于添加内存跟踪到LLVM的基本块
 void addMemoryTraceToBB(IRBuilder<> &Builder, llvm::Function &Function,
                         llvm::Module &M, bool IsLoad) {
   auto &CTX = M.getContext();
-
+  // 定义fprintf函数的参数类型：两个未修饰的8位指针
   std::vector<llvm::Type *> FprintfArgs{
       PointerType::getUnqual(Type::getInt8Ty(CTX)),
       PointerType::getUnqual(Type::getInt8Ty(CTX))};
-
+  // 创建fprintf函数的类型定义
   FunctionType *FprintfTy =
       FunctionType::get(Type::getInt32Ty(CTX), FprintfArgs, true);
-
+  // 获取或插入fprintf函数到模块中
   FunctionCallee Fprintf = M.getOrInsertFunction("fprintf", FprintfTy);
-
+  // 创建并初始化跟踪读操作的字符串
   Constant *TraceLoadStr = llvm::ConstantDataArray::getString(
       CTX, "[Read] Read value 0x%lx from address %p\n");
   Constant *TraceLoadStrVar =
       M.getOrInsertGlobal("TraceLoadStr", TraceLoadStr->getType());
   dyn_cast<GlobalVariable>(TraceLoadStrVar)->setInitializer(TraceLoadStr);
+  // 创建并初始化跟踪写操作的字符串
 
   Constant *TraceStoreStr = llvm::ConstantDataArray::getString(
       CTX, "[Write] Wrote value 0x%lx to address %p\n");
@@ -100,6 +102,7 @@ void addMemoryTraceToBB(IRBuilder<> &Builder, llvm::Function &Function,
   dyn_cast<GlobalVariable>(TraceLoadStrVar)->setInitializer(TraceStoreStr);
 
   llvm::Value *StrPtr;
+  // 根据是读操作还是写操作，选择相应的跟踪字符串
   if (IsLoad)
     StrPtr = Builder.CreatePointerCast(TraceLoadStrVar, FprintfArgs[1],
                                        "loadStrPtr");
@@ -107,10 +110,11 @@ void addMemoryTraceToBB(IRBuilder<> &Builder, llvm::Function &Function,
   else
     StrPtr = Builder.CreatePointerCast(TraceStoreStrVar, FprintfArgs[1],
                                        "storeStrPtr");
-
+  // 获取文件指针全局变量，并加载它
   GlobalVariable *FPGlobal = M.getNamedGlobal(FilePointerVarName);
   llvm::LoadInst *FP = Builder.CreateLoad(
       PointerType::getUnqual(Type::getInt8Ty(CTX)), FPGlobal);
+  // 创建对fprintf的调用，传递文件指针、跟踪字符串和函数的参数
   Builder.CreateCall(Fprintf,
                      {FP, StrPtr, Function.getArg(1), Function.getArg(0)});
 }
@@ -172,50 +176,57 @@ void addTraceMemoryFunction(llvm::Module &M) {
   addMemoryTraceToBB(Builder, *TraceMemoryFunction, M, false);
   Builder.CreateRetVoid();
 }
+// 定义一个函数，用于LLVM指令添加内存跟踪功能
+void addMemoryTraceToInstruction(llvm::Module &M,
+                                 llvm::Instruction &Instruction) {
+  // 获取LLVM模块的上下文
+  auto &CTX = M.getContext();
 
-void addMemoryTraceToInstruction(llvm::Module &M,llvm::Instruction &Instruction) {
-    auto &CTX = M.getContext();
+  // 定义跟踪函数的参数类型：一个未修饰的8位指针、64位整数和32位整数
+  std::vector<llvm::Type *> TraceMemoryArgs{
+      PointerType::getUnqual(Type::getInt8Ty(CTX)), Type::getInt64Ty(CTX),
+      Type::getInt32Ty(CTX)};
 
-    std::vector<llvm::Type*> TraceMemoryArgs{
-      PointerType::getUnqual(Type::getInt8Ty(CTX)),
-      Type::getInt64Ty(CTX),
-      Type::getInt32Ty(CTX)
-    };
+  // 创建跟踪函数的类型定义
+  FunctionType *TraceMemoryTy =
+      FunctionType::get(Type::getVoidTy(CTX), TraceMemoryArgs, false);
+  // 获取或插入内存跟踪函数到模块中
+  FunctionCallee TraceMemory =
+      M.getOrInsertFunction(TraceMemoryFunctionName, TraceMemoryTy);
+  // 创建一个IRBuilder，用于在指定指令之后构建IR代码
+  IRBuilder<> Builder(Instruction.getNextNode());
+  // 动态转换指令类型为LoadInst或StoreInst
+  llvm::LoadInst *LoadInst = dyn_cast<llvm::LoadInst>(&Instruction);
+  llvm::StoreInst *StoreInst = dyn_cast<llvm::StoreInst>(&Instruction);
 
+  llvm::Value *MemoryAddress;
+  // 根据指令类型（加载或存储），获取相应的内存地址，并进行类型转换
+  if (LoadInst) {
+    MemoryAddress = Builder.CreatePointerCast(
+        LoadInst->getPointerOperand(), TraceMemoryArgs[0], "memoryAddress");
+  } else {
+    MemoryAddress = Builder.CreatePointerCast(
+        StoreInst->getPointerOperand(), TraceMemoryArgs[0], "memoryAddress");
+  }
 
-   FunctionType *TraceMemoryTy = FunctionType::get(Type::getVoidTy(CTX),TraceMemoryArgs,false);
-   
-   FunctionCallee TraceMemory = M.getOrInsertFunction(TraceMemoryFunctionName,TraceMemoryTy);
+  llvm::Value *CastTo64;
+  // 根据是加载还是存储指令，选择要打印的值
+  llvm::Value *ValueToPrint =
+      LoadInst ? &Instruction : StoreInst->getOperand(0);
+  bool ShouldConvertPoiter = ValueToPrint->getType()->isPointerTy();
 
-   IRBuilder<> Builder(Instruction.getNextNode());
-   llvm::LoadInst *LoadInst = dyn_cast<llvm::LoadInst>(&Instruction);
-   llvm::StoreInst *StoreInst =  dyn_cast<llvm::StoreInst>(&Instruction);
-
-   llvm::Value *MemoryAddress;
-
-   if(LoadInst){
-      MemoryAddress = Builder.CreatePointerCast(LoadInst->getPointerOperand(),TraceMemoryArgs[0],"memoryAddress");
-   } else {
-      MemoryAddress = Builder.CreatePointerCast(StoreInst->getPointerOperand(),TraceMemoryArgs[0],"memoryAddress");
-   }
-
-   llvm::Value *CastTo64;
-   llvm::Value *ValueToPrint = LoadInst ? &Instruction : StoreInst->getOperand(0);
-   bool ShouldConvertPoiter =  ValueToPrint->getType()->isPointerTy();
-
-   if(ShouldConvertPoiter){
-    CastTo64 = Builder.CreatePtrToInt(ValueToPrint,TraceMemoryArgs[1],"castTo64");
-   } else {
-    CastTo64 = Builder.CreateIntCast(ValueToPrint,TraceMemoryArgs[1],false,"castTo64");
-   }
-
-   Builder.CreateCall(TraceMemory,{MemoryAddress,CastTo64,Builder.getInt32(Instruction.getOpcode() == llvm::Instruction::Load)});
-
-
-   
-
-
-
+  // 如果是指针类型，则转换为64位整数，否则进行整数转换
+  if (ShouldConvertPoiter) {
+    CastTo64 =
+        Builder.CreatePtrToInt(ValueToPrint, TraceMemoryArgs[1], "castTo64");
+  } else {
+    CastTo64 = Builder.CreateIntCast(ValueToPrint, TraceMemoryArgs[1], false,
+                                     "castTo64");
+  }
+  // 创建对跟踪函数的调用，传递内存地址、转换后的值和操作码
+  Builder.CreateCall(TraceMemory, {MemoryAddress, CastTo64,
+                                   Builder.getInt32(Instruction.getOpcode() ==
+                                                    llvm::Instruction::Load)});
 }
 
 struct MemoryTrace : public llvm::PassInfoMixin<MemoryTrace> {
@@ -240,20 +251,19 @@ struct MemoryTrace : public llvm::PassInfoMixin<MemoryTrace> {
       return llvm::PreservedAnalyses::all();
     }
 
-
-    for(llvm::Function &F : M) {
-      if(F.getName() == TraceMemoryFunctionName) {
+    for (llvm::Function &F : M) {
+      if (F.getName() == TraceMemoryFunctionName) {
         continue;
       }
-       
-      for(llvm::BasicBlock &BB : F){
-        for(llvm::Instruction &Instruction : BB){
-          if(Instruction.getOpcode() == llvm::Instruction::Load ||
-             Instruction.getOpcode() == llvm::Instruction::Store) {
-              addMemoryTraceToInstruction(M,Instruction);
-             }
+
+      for (llvm::BasicBlock &BB : F) {
+        for (llvm::Instruction &Instruction : BB) {
+          if (Instruction.getOpcode() == llvm::Instruction::Load ||
+              Instruction.getOpcode() == llvm::Instruction::Store) {
+            addMemoryTraceToInstruction(M, Instruction);
+          }
         }
-      } 
+      }
     }
 
     return llvm::PreservedAnalyses::all();
