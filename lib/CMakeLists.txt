@@ -15,7 +15,8 @@ set(LLVM_EXECISE_PLUGINS
     # ConvertFCmpEq
     # MemoryTrace
     # FunctionInfo
-    Transform
+    # Transform
+    AlgebraicIdentityPass
     )
 
 
@@ -45,8 +46,10 @@ set(LLVM_EXECISE_PLUGINS
 #   MemoryTrace.cpp)  
 # set(FunctionInfo_SOURCES
 #   FunctionInfo.cpp) 
-set(Transform_SOURCES
-  Transform.cpp)   
+# set(Transform_SOURCES
+#   Transform.cpp)   
+set(AlgebraicIdentityPass_SOURCES
+    AlgebraicIdentityPass.cpp)
 
 
 # CONFIGURE THE PLUGIN LIBRARIES
