@@ -16,7 +16,7 @@ set(LLVM_EXECISE_PLUGINS
     # MemoryTrace
     # FunctionInfo
     # Transform
-    AlgebraicIdentityPass
+    StrengthReductionPass
     )
 
 
@@ -48,9 +48,10 @@ set(LLVM_EXECISE_PLUGINS
 #   FunctionInfo.cpp) 
 # set(Transform_SOURCES
 #   Transform.cpp)   
-set(AlgebraicIdentityPass_SOURCES
-    AlgebraicIdentityPass.cpp)
-
+# set(AlgebraicIdentityPass_SOURCES
+#     AlgebraicIdentityPass.cpp)
+set(StrengthReductionPass_SOURCES
+      StrengthReductionPass.cpp)
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================

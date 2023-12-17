@@ -20,26 +20,30 @@ public:
     for (Function &F : M) {
       for (BasicBlock &B : F) {
         for (auto &I : B) {
+          //判断指令是否为二元运算
+          if (auto *operat = dyn_cast<BinaryOperator>(&I)) {
 
-          if (auto *operator1 = dyn_cast<BinaryOperator>(&I)) {
-
-            auto &op = *operator1;
+            auto &op = *operat;
 
             if (op.getOpcode() == Instruction::Add) {
+              //使用match()检查操作数是否有0 或 1；相似实现也可以用val->getZExtValue() == 0 or 1
               if (PatternMatch::match(op.getOperand(0),
                                       PatternMatch::m_Zero()) ||
                   PatternMatch::match(op.getOperand(1),
                                       PatternMatch::m_Zero())) {
                 errs() << "Applying identity x + 0 = x to: " << op << "\n";
+                //创建常量：取指令中不为0的操作数，创建常量
                 Value *other =
                     op.getOperand(0) == ConstantInt::getNullValue(op.getType())
                         ? op.getOperand(1)
                         : op.getOperand(0);
+                //使用常量other ，替换所有使用op指令地方
                 op.replaceAllUsesWith(other);
-
+                //op存储到待删除列表
                 toDelete.push_back(&op);
               }
             } else if (op.getOpcode() == Instruction::Mul) {
+              //x * 1 = x
               if (PatternMatch::match(op.getOperand(0),
                                       PatternMatch::m_One()) ||
                   PatternMatch::match(op.getOperand(1),
@@ -52,12 +56,14 @@ public:
                 op.replaceAllUsesWith(other);
                 toDelete.push_back(&op);
               }
-            }
+
+            } 
           }
         }
       }
     }
 
+    //删除原始的指令
     for (Instruction *I : toDelete) {
       if (I->isSafeToRemove())
         I->eraseFromParent();
@@ -71,8 +77,8 @@ public:
 
 extern "C" LLVM_ATTRIBUTE_WEAK ::llvm::PassPluginLibraryInfo
 llvmGetPassPluginInfo() {
-  return {LLVM_PLUGIN_API_VERSION, "AlgebraicIdentityPass",
-          LLVM_VERSION_STRING, [](PassBuilder &PB) {
+  return {LLVM_PLUGIN_API_VERSION, "AlgebraicIdentityPass", LLVM_VERSION_STRING,
+          [](PassBuilder &PB) {
             PB.registerPipelineParsingCallback(
                 [](StringRef Name, ModulePassManager &MPM,
                    ArrayRef<PassBuilder::PipelineElement>) {
