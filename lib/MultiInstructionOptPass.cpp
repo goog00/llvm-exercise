@@ -1,4 +1,4 @@
-//StrengthReduction x * 2 ==》 x<<1
+//𝑎 = 𝑏 + 1, 𝑐 = 𝑎 − 1 ⇒ 𝑎 = 𝑏 + 1, 𝑐 = 𝑏
 
 #include "llvm/IR/Constant.h"
 #include "llvm/IR/Function.h"
@@ -27,20 +27,10 @@ public:
 
             auto &op = *operat;
 
-            if (op.getOpcode() == Instruction::Mul) {
-              
-              // x * 2 ===> x<<1;
+            if (op.getOpcode() == Instruction::Add) {
+              //𝑎 = 𝑏 + 1, 𝑐 = 𝑎 − 1 ⇒ 𝑎 = 𝑏 + 1, 𝑐 = 𝑏
               if(ConstantInt *rand = dyn_cast<ConstantInt>(op.getOperand(1))){
-                if(rand->getZExtValue() == 2){
-                  errs() << "Applying identity x * 2 ==>  x<<1 to: " << op << "\n";
-                  IRBuilder<> builder(M.getContext());
-                  //表示新创建的指令将被放置在op所在的基本块中，并且位于op之前
-                  builder.SetInsertPoint(&op);
-                  //创建左移指令：参数1是第一个操作数，参数2是1
-                  Value *shiftLeft =  builder.CreateShl(op.getOperand(0),ConstantInt::get(op.getType(),1));
-                  errs() << "shiftLeft: " <<  *shiftLeft;
-                  op.replaceAllUsesWith(shiftLeft);
-                  toDelete.push_back(&op);
+                
                 }
               }
             } 
