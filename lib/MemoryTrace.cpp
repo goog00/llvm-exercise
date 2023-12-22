@@ -27,7 +27,7 @@ void addGlobalMemoryTraceFP(llvm::Module &M) {
   nameGlobal->setLinkage(GlobalValue::ExternalLinkage);
 }
 
-// 添加内存追踪文件指针初始化函数
+// 添加内存追踪文件指针 初始化函数
 void addMemoryTraceFPInitialization(llvm::Module &M, llvm::Function &MainFunc) {
   // 获取LLVM模块的上下文
   auto &CTX = M.getContext();
@@ -49,8 +49,7 @@ void addMemoryTraceFPInitialization(llvm::Module &M, llvm::Function &MainFunc) {
   Constant *FopenFileNameStrVar =
       M.getOrInsertGlobal("FopenFileNameStr", FopenFileNameStr->getType());
   // 将文件名字符串常量设置为全局变量的初始化值
-  dyn_cast<GlobalVariable>(FopenFileNameStrVar)
-      ->setInitializer(FopenFileNameStr);
+  dyn_cast<GlobalVariable>(FopenFileNameStrVar)->setInitializer(FopenFileNameStr);
 
   // 创建一个常量字符串"w+"
   Constant *FopenModeStr = llvm::ConstantDataArray::getString(CTX, "w+");

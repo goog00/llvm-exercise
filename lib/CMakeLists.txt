@@ -7,7 +7,7 @@ set(LLVM_EXECISE_PLUGINS
     # StaticCallCounter
     # DynamicCallCounter
     # MBASub
-    MBAAdd
+    # MBAAdd
     # RIV
     # DuplicateBB
     # MergeBB
@@ -16,7 +16,8 @@ set(LLVM_EXECISE_PLUGINS
     # MemoryTrace
     # FunctionInfo
     # Transform
-    StrengthReductionPass
+    # StrengthReductionPass
+    ModuleMaker
     )
 
 
@@ -30,8 +31,8 @@ set(LLVM_EXECISE_PLUGINS
 #   DynamicCallCounter.cpp)     
 # set(MBASub_SOURCES
 #   MBASub.cpp) 
-set(MBAAdd_SOURCES
-  MBAAdd.cpp)  
+# set(MBAAdd_SOURCES
+#   MBAAdd.cpp)  
 # set(RIV_SOURCES
 #   RIV.cpp) 
 # set(DuplicateBB_SOURCES
@@ -50,8 +51,10 @@ set(MBAAdd_SOURCES
 #   Transform.cpp)   
 # set(AlgebraicIdentityPass_SOURCES
 #     AlgebraicIdentityPass.cpp)
-set(StrengthReductionPass_SOURCES
-      StrengthReductionPass.cpp)
+# set(StrengthReductionPass_SOURCES
+#       StrengthReductionPass.cpp)
+set(ModuleMaker_SOURCES
+ModuleMaker.cpp)
 
 # CONFIGURE THE PLUGIN LIBRARIES
 # ==============================
