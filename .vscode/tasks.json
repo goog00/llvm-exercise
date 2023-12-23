@@ -12,6 +12,7 @@
           "-stdlib=libc++",
           "-g",
           "${file}",
+          "`llvm-config --cxxflags --ldflags --libs core`",
           "-o",
           "${fileDirname}/${fileBasenameNoExtension}"
         ],
