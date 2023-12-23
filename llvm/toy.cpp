@@ -1,3 +1,16 @@
+// 包含以下功能实现：
+// Creating an LLVM module
+// Emitting a function in a module
+// Adding a block to a function
+// Emitting a global variable
+// Emitting a return statement
+// Emitting function arguments
+// Emitting a simple arithmetic statement in a basic block Emitting if-else condition IR
+// Emitting LLVM IR for loops
+// 编译命令：
+// /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++ -g ../llvm/toy.cpp `llvm-config --cxxflags --ldflags --system-libs --libs core` -o toy
+// ./toy
+
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/Module.h"
