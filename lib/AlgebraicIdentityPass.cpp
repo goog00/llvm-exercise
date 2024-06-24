@@ -7,6 +7,8 @@
 #include "llvm/Passes/PassPlugin.h"
 #include "llvm/Support/raw_ostream.h"
 
+// 代数恒等式
+
 using namespace llvm;
 namespace {
 class AlgebraicIdentityPass final
@@ -25,8 +27,9 @@ public:
 
             auto &op = *operat;
 
+            //使用match()检查操作数是否有0 或 1；相似实现也可以用val->getZExtValue() == 0 or 1
             if (op.getOpcode() == Instruction::Add) {
-              //使用match()检查操作数是否有0 或 1；相似实现也可以用val->getZExtValue() == 0 or 1
+              //add 操作检查操作数是否有0
               if (PatternMatch::match(op.getOperand(0),
                                       PatternMatch::m_Zero()) ||
                   PatternMatch::match(op.getOperand(1),
@@ -43,6 +46,7 @@ public:
                 toDelete.push_back(&op);
               }
             } else if (op.getOpcode() == Instruction::Mul) {
+              //mul 操作检查操作数是否有 1
               //x * 1 = x
               if (PatternMatch::match(op.getOperand(0),
                                       PatternMatch::m_One()) ||

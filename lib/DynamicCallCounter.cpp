@@ -101,7 +101,7 @@ bool DynamicCallCounter::runOnModule(Module &M) {
       M.getOrInsertGlobal("ResultFormatStrIR", ResultFormatStr->getType());
 
   //setInitializer(ResultFormatStrVar) 会异常
-  dyn_cast<GlobalVariable>(ResultFormatStr)->setInitializer(ResultFormatStr);
+  dyn_cast<GlobalVariable>(ResultFormatStrVar)->setInitializer(ResultFormatStr);
 
   std::string out = "";
   out += "=================================================\n";
